@@ -36,7 +36,7 @@ private:
     bool consume(char* op);
 public:
     static Node* newNode(NodeKind kind);
-    static Node* newBinary(NodeKind kidn,Node* left,Node* right);
+    static Node* newBinary(NodeKind kind,Node* left,Node* right);
     static Node* newNumber(int val);
 
 public:

@@ -19,17 +19,33 @@ private:
     }
     
 public:
-    Token* newToken(TokenKind kind, char *str){
+    Token* newToken(TokenKind kind, char *start){
 
-        Token *token = new Token(kind,str);
+        Token *token = new Token(kind,start);
         if(cursorToken){
-            cursorToken->next = token;
+            cursorToken->setNextToken(token);
             cursorToken = token;
         }else{
             headerToken = cursorToken = token;
         }
 
+        tokenCount++;
+
         return cursorToken;
+    }
+    bool isID_1(char c){
+        return ('a' <= c && c <= 'z')||('A' <= c && c <= 'Z')|| c == '_';
+    }
+    bool isID_2(char c){
+        return isID_1(c) || ('0' <= c && c <= '9');
+    }
+
+    int getPunct(char* p){
+        if ( this->startswith(p,(char*)"==") || this->startswith(p,(char*)"!=")
+           ||this->startswith(p,(char*)"<=") || this->startswith(p,(char*)">=") ){
+            return 2;
+        }
+        return std::ispunct(*p) ? 1:0;
     }
 
     Token* tokenize(char *p){
@@ -40,30 +56,37 @@ public:
                 p++;
                 continue;
             }
+            // Number Literal
+            if(std::isdigit(*p)){
+                Token* tempToken = this->newToken(TokenKind::TK_NUM,p);
+                char* q = p;
+                tempToken->setIntValue(std::strtoul(p, &p, 10));
+                tempToken->setLength(p - q);
+                continue;
+            }
+            //ID && Keywords
+            if (isID_1(*p)){
+                char* start = p;
+                do{
+                    p++;
+                }while(isID_2(*p));
+                Token* tempToken = this->newToken(TokenKind::TK_IDENT,start);
+                tempToken->setLength(p-start);
+                continue;
+            }
 
-            if (  this->startswith(p,"==") || this->startswith(p,"!=")
-                ||this->startswith(p,"<=") || this->startswith(p,">=") ){
-                p += 2;
-                this->newToken(TokenKind::TK_RESERVED,p);
-                tokenCount++;
+            //Punctuator
+            int punctuatorLength = this->getPunct(p);
+            if( punctuatorLength > 0 ){
+                Token* tempToken = this->newToken(TokenKind::TK_PUNCT,p);
+                p += punctuatorLength;
+                tempToken->setLength(punctuatorLength);
                 continue;
             }
-            // TODO continue;
 
-            if ( *p == '+' || *p == '-') {
-                this->newToken(TokenKind::TK_RESERVED,p++);
-                tokenCount++;
-                continue;
-            }
-            
-            if(std::isdigit(*p)) {
-                this->newToken(TokenKind::TK_NUM,p);
-                //TODO think a lot
-                this->cursorToken->val = strtol(p, &p, 10);
-                tokenCount++;
-                continue;
-            }
-            Logger::error("invalid token");    
+            // Error
+            Logger::error("invalid token");
+            break;
         }
         this->newToken(TokenKind::TK_EOF,p);
         return headerToken;

@@ -9,8 +9,6 @@ int main(int argc, char** argv){
         Logger::error("invalid number of arguments");
         return -1;
     }
-        
-
 
     Tokenizer tokenizer;
     Token* token = tokenizer.tokenize(argv[2]);
@@ -24,7 +22,6 @@ int main(int argc, char** argv){
         Logger::info(token->str);
         token = token->next;
     }
-    
 
     
     return 0;

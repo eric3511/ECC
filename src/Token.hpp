@@ -2,23 +2,34 @@
 
 enum class TokenKind
 {
-  TK_RESERVED, // Keywords or punctuators
-  TK_NUM,      // Integer literals
-  TK_EOF,      // End-of-file markers
+    TK_IDENT,   // Identifiers
+    TK_PUNCT,   // Punctuators
+    TK_KEYWORD, // Keywords
+    TK_NUM,     // Numeric literals
+    TK_EOF,     // End-of-file markers
 };
 
 
 class Token
 {
-public:
-  TokenKind kind; // Token kind
-  Token* next;    // Next token
-  long val;       // If kind is TK_NUM, its value
-  char* str;      // Token string
+//public:
+    TokenKind kind; // Token kind
+    Token* next;    // Next token
+    int val;        // If kind is TK_NUM, its value
+    char *loc;      // Token location
+    uint32_t len;        // Token length
 
 public:
-    Token(TokenKind _kind, char* _str):kind(_kind),str(_str){
+    Token(TokenKind _kind,char* _loc):kind(_kind),loc(_loc){};
 
-    };
+    void setLength(uint32_t length){
+        this->len = length;
+    }
+    void setNextToken(Token* next){
+        this->next = next;
+    }
+    void setIntValue(int value){
+        this->val = value;
+    }
 
 };
