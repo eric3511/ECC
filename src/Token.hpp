@@ -1,4 +1,5 @@
 #pragma once
+#include<memory>
 
 enum class TokenKind
 {
@@ -31,5 +32,18 @@ public:
     void setIntValue(int value){
         this->val = value;
     }
+
+    //just for test
+    std::unique_ptr<std::string> getName(){
+        return std::make_unique<std::string>(this->loc,this->len);
+    }
+
+    Token* getNext(){
+        return this->next;
+    }
+    TokenKind getKind(){
+        return this->kind;
+    }
+
 
 };

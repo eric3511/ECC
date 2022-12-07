@@ -28,11 +28,10 @@ public:
         }else{
             headerToken = cursorToken = token;
         }
-
         tokenCount++;
-
         return cursorToken;
     }
+
     bool isID_1(char c){
         return ('a' <= c && c <= 'z')||('A' <= c && c <= 'Z')|| c == '_';
     }
